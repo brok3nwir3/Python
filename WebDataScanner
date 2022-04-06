@@ -1,0 +1,127 @@
+#WebDataScanner
+#A program by brok3nwir3
+#This program that takes a webpage as input, then scans the page and it's HTML code for sensitive data.
+
+#----IMPORT REQUIRED LIBRARIES----
+
+#Import the library for interpreting Bash commands.
+import subprocess
+#Import the library for regular expression string matching.
+import re
+#Import the libarary for matching Unix-style pathname patterns.
+import glob
+#Import the library for interacting with the OS.
+import os
+
+#----PROGRAM STARTS HERE----
+
+print("\nRunning WebDataScanner...\n")
+
+#Prompt user for a target, and store the value.
+webpage = input("Enter the target webpage:")
+print("\n")
+
+#Variable to store and format the WGET.
+wGet = "wget " + webpage
+
+#Run wget process and print its output.
+process = subprocess.Popen(wGet.split(), stdout=subprocess.PIPE)
+output, error = process.communicate()
+
+#Pause until current process finishes.
+process.wait()
+
+#Find all HTML files in the current directory, and store them in an array.
+pageArray = []
+for file in glob.glob("*"):
+        if not file.startswith('project.py') and not file.startswith('temp.txt'):
+                pageArray.append(file)
+
+#Outputs all the contents of the HTML files into a single temp.txt file.
+my_cmd = ['cat'] + pageArray  #input_files
+with open('temp.txt', "w") as outfile:
+    subprocess.run(my_cmd, stdout=outfile)
+
+#Pause until current process finishes.
+process.wait()
+
+#Opens the temp file, reads the temp file, and then returns pattern matches.
+
+#Search the target file for email addresses.
+print("Possible Emails:")
+targetFile = open("temp.txt","r")
+for line in targetFile:
+        email = re.search(r'[\w.-]+@[\w.-]+', line)
+        if email:
+                print(email.group())
+
+#Note for the following code...
+#HTML from WGET often ends strings with a closing less than symbol for HTML tags...
+#This means lines end with '<' rather than \n or \s in many cases.
+
+#Search the target file for phone numbers.
+print("\nPossible Phone Numbers:")
+targetFile = open("temp.txt","r")
+for line in targetFile:
+        phoneType1 = re.search(r'([>\n\s]{1}\d\d\d[.-]+\d\d\d[.-]+\d\d\d\d[\s\n<]{1})', line)
+        if phoneType1:
+                print(phoneType1.group().replace('<','').replace('>',''))
+        phoneType2 = re.search(r'([>\n\s]{1}\(+\d\d\d+\)+\s\d\d\d+([ ]{0,1})+([.-]{0,1})+\d\d\d\d[\s\n<]{1})', line)
+        if phoneType2:
+                print(phoneType2.group().replace('<','').replace('>',''))
+
+#Search the target file for social security numbers.
+print("\nPossible Social Security Numbers:")
+targetFile = open("temp.txt", "r")
+for line in targetFile:
+        ssn = re.search(r'([>\n\s]{1}\d{3}[-]+\d{2}[-]+\d{4}[\s\n<]{1})', line)
+        if ssn:
+                print(ssn.group().replace('<','').replace('>',''))
+
+#Search the target file for credit card numbers.
+print("\nPossible Credit Card Numbers:")
+targetFile = open("temp.txt", "r")
+for line in targetFile:
+        ccnType1 = re.search(r'([>\n\s]{1}\d{4}\s\d{4}\s\d{4}\s\d{4}[\s\n<]{1})', line)
+        if ccnType1:
+                print(ccnType1.group().replace('<','').replace('>',''))
+        ccnType2 = re.search(r'([>\n\s]{1}\d{4}[-]\d{4}[-]\d{4}[-]\d{4}[\s\n<]{1})', line)
+        if ccnType2:
+                print(ccnType2.group().replace('<','').replace('>',''))
+
+#Search the target file for interesting strings.
+#print("\nInteresting Strings:")
+interestingStrings = False
+targetFile = open("temp.txt","r")
+for line in targetFile:
+        check1 = re.search(r'api=', line)
+        if check1:
+                 interestingStrings = True
+        check2 = re.search(r'token=', line)
+        if check2:
+                interestingStrings = True
+        check3 = re.search('password', line)
+        if check3:
+                interestingStrings = True
+
+if interestingStrings == True:
+        print("\nInteresting Strings were detected.")
+
+proceed = input("Press \'y\' to view or \'n\' to exit.:")
+#print("\n")
+if proceed == 'y':
+        print("You proceeded lol.")
+
+print("more text...")
+
+#----CLEAN UP STEPS----
+
+#Close the temp file.
+targetFile.close()
+
+#Remove the temp file.
+os.remove("temp.txt")
+
+#Remove each file in the pageArray.
+for x in pageArray:
+        os.remove(x)

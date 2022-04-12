@@ -1,5 +1,5 @@
 #WebDataScanner
-#A program by brok3nwir3
+#A Python3 program by brok3nwir3 
 #This program that takes a webpage as input, then scans the page and it's HTML code for sensitive data.
 
 #----IMPORT REQUIRED LIBRARIES----
@@ -45,7 +45,7 @@ with open('temp.txt', "w") as outfile:
 #Pause until current process finishes.
 process.wait()
 
-#Opens the temp file, reads the temp file, and then returns pattern matches.
+#----STRING SEARCHING BEGINS----
 
 #Search the target file for email addresses.
 print("Possible Emails:")
@@ -56,8 +56,8 @@ for line in targetFile:
                 print(email.group())
 
 #Note for the following code...
-#HTML from WGET often ends strings with a closing less than symbol for HTML tags...
-#This means lines end with '<' rather than \n or \s in many cases.
+#HTML from WGET often contains strings with a less than or greater than symbols for HTML tags...
+#This means strings may be delimited with '<' or '>' rather than \n or \s in many cases.
 
 #Search the target file for phone numbers.
 print("\nPossible Phone Numbers:")
@@ -90,29 +90,64 @@ for line in targetFile:
                 print(ccnType2.group().replace('<','').replace('>',''))
 
 #Search the target file for interesting strings.
-#print("\nInteresting Strings:")
 interestingStrings = False
+interestingList = ["api=", "token=", "session=", "sessionid=", "userid=", "cookie="]
+matchList = []
+
 targetFile = open("temp.txt","r")
 for line in targetFile:
-        check1 = re.search(r'api=', line)
+        check1 = re.compile(".*api=.*")
         if check1:
-                 interestingStrings = True
-        check2 = re.search(r'token=', line)
-        if check2:
-                interestingStrings = True
-        check3 = re.search('password', line)
-        if check3:
-                interestingStrings = True
+                matchList.append(list(filter(check1.match, interestingList)))
+                break
 
+targetFile = open("temp.txt","r")
+for line in targetFile:
+        check2 = re.compile(".*token=.*")
+        if check2:
+                matchList.append(list(filter(check2.match, interestingList)))
+                break
+
+targetFile = open("temp.txt","r")
+for line in targetFile:
+        check3 = re.compile(".*session=.*")
+        if check3:
+                matchList.append(list(filter(check3.match, interestingList)))
+                break
+
+targetFile = open("temp.txt","r")
+for line in targetFile:
+        check4 = re.compile(".*sessionid=.*")
+        if check4:
+                matchList.append(list(filter(check4.match, interestingList)))
+                break
+
+targetFile = open("temp.txt","r")
+for line in targetFile:
+        check5 = re.compile(".*userid=.*")
+        if check5:
+                matchList.append(list(filter(check5.match, interestingList)))
+                break
+
+targetFile = open("temp.txt","r")
+for line in targetFile:
+        check6 = re.compile(".*cookie=.*")
+        if check6:
+                matchList.append(list(filter(check6.match, interestingList)))
+                break
+
+#Check whether interesting strings were found.
+if len(matchList) > 0:
+        interestingStrings = True
+
+#If interesting strings were found, provide option to list items.
 if interestingStrings == True:
         print("\nInteresting Strings were detected.")
-
-proceed = input("Press \'y\' to view or \'n\' to exit.:")
-#print("\n")
-if proceed == 'y':
-        print("You proceeded lol.")
-
-print("more text...")
+        proceed = input("\nPress \'y\' to view or \'n\' to exit:")
+        if proceed == 'y':
+                print("\nInteresting String List...")
+                for x in range(len(matchList)):
+                        print(matchList[x])
 
 #----CLEAN UP STEPS----
 
@@ -122,6 +157,6 @@ targetFile.close()
 #Remove the temp file.
 os.remove("temp.txt")
 
-#Remove each file in the pageArray.
+#Remove each file downloaded in the current directory.
 for x in pageArray:
         os.remove(x)

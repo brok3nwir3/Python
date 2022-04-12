@@ -22,7 +22,7 @@ webpage = input("Enter the target webpage:")
 print("\n")
 
 #Variable to store and format the WGET.
-wGet = "wget " + webpage
+wGet = "wget -S " + webpage
 
 #Run wget process and print its output.
 process = subprocess.Popen(wGet.split(), stdout=subprocess.PIPE)
@@ -91,63 +91,62 @@ for line in targetFile:
 
 #Search the target file for interesting strings.
 interestingStrings = False
-interestingList = ["api=", "token=", "session=", "sessionid=", "userid=", "cookie="]
-matchList = []
+interestingList = []
 
 targetFile = open("temp.txt","r")
 for line in targetFile:
-        check1 = re.compile(".*api=.*")
+        check1 = re.search(r'api=', line)
         if check1:
-                matchList.append(list(filter(check1.match, interestingList)))
+                interestingList.append("api=")
                 break
 
 targetFile = open("temp.txt","r")
 for line in targetFile:
-        check2 = re.compile(".*token=.*")
+        check2 = re.search(r'token=', line)
         if check2:
-                matchList.append(list(filter(check2.match, interestingList)))
+                interestingList.append("token=")
                 break
 
 targetFile = open("temp.txt","r")
 for line in targetFile:
-        check3 = re.compile(".*session=.*")
+        check3 = re.search(r'session=', line)
         if check3:
-                matchList.append(list(filter(check3.match, interestingList)))
+                interestingList.append("session=")
                 break
 
 targetFile = open("temp.txt","r")
 for line in targetFile:
-        check4 = re.compile(".*sessionid=.*")
+        check4 = re.search(r'sessionid=', line)
         if check4:
-                matchList.append(list(filter(check4.match, interestingList)))
+                interestingList.append("sessionid=")
                 break
 
 targetFile = open("temp.txt","r")
 for line in targetFile:
-        check5 = re.compile(".*userid=.*")
+        check5 = re.search(r'userid=', line)
         if check5:
-                matchList.append(list(filter(check5.match, interestingList)))
+                interestingList.append("userid=")
                 break
 
 targetFile = open("temp.txt","r")
 for line in targetFile:
-        check6 = re.compile(".*cookie=.*")
+        check6 = re.search(r'cookie=', line)
         if check6:
-                matchList.append(list(filter(check6.match, interestingList)))
+                interestingList.append("cookie=")
                 break
 
 #Check whether interesting strings were found.
-if len(matchList) > 0:
+if len(interestingList) > 0:
         interestingStrings = True
 
 #If interesting strings were found, provide option to list items.
 if interestingStrings == True:
-        print("\nInteresting Strings were detected.")
+        print("\nInteresting code strings were detected.")
         proceed = input("\nPress \'y\' to view or \'n\' to exit:")
         if proceed == 'y':
-                print("\nInteresting String List...")
-                for x in range(len(matchList)):
-                        print(matchList[x])
+                print("\nOne or more instances of...")
+                for x in range(len(interestingList)):
+                        print(interestingList[x])
 
 #----CLEAN UP STEPS----
 

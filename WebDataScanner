@@ -17,33 +17,41 @@ import os
 
 print("\nRunning WebDataScanner...\n")
 
+initial_cwd = os.getcwd()
+proc1 = subprocess.run(["mkdir", "tempDir"])
+os.chdir('tempDir')
+
 #Prompt user for a target, and store the value.
 webpage = input("Enter the target webpage:")
 print("\n")
 
 #Variable to store and format the WGET.
-wGet = "wget -S " + webpage
+#wGet = "wget -S -np " + webpage
 
-#Run wget process and print its output.
-process = subprocess.Popen(wGet.split(), stdout=subprocess.PIPE)
-output, error = process.communicate()
+proc2 = subprocess.run(["wget", "-q", "-np", webpage])
+#proc2 = subprocess.run(["wget", "-S", "-np", webpage], capture_output=True)
 
-#Pause until current process finishes.
-process.wait()
+# -q = turn off output
+# -S = headers
+# -np = no parents directories
+# -nd = prevents directories from being created
+# -r = resursive
+# -A = accept... add "html" or w/e
+# -l 1 = set recusion depth to one
+# --delete-after = removes locally downloaded files
+# working command...
+#  wget -nd -r -l 1 -np https://www.csusm.edu/about/contact.html
 
 #Find all HTML files in the current directory, and store them in an array.
 pageArray = []
 for file in glob.glob("*"):
-        if not file.startswith('project.py') and not file.startswith('temp.txt'):
+        if not file.startswith('WebDataScanner.py') and not file.startswith('temp.txt'):
                 pageArray.append(file)
 
-#Outputs all the contents of the HTML files into a single temp.txt file.
+#Writes all the contents of the downloaded files into a single temp.txt output file.
 my_cmd = ['cat'] + pageArray  #input_files
 with open('temp.txt', "w") as outfile:
-    subprocess.run(my_cmd, stdout=outfile)
-
-#Pause until current process finishes.
-process.wait()
+        subprocess.run(my_cmd, stdout=outfile)
 
 #----STRING SEARCHING BEGINS----
 
@@ -153,9 +161,5 @@ if interestingStrings == True:
 #Close the temp file.
 targetFile.close()
 
-#Remove the temp file.
-os.remove("temp.txt")
-
-#Remove each file downloaded in the current directory.
-for x in pageArray:
-        os.remove(x)
+os.chdir(initial_cwd)
+proc3 = subprocess.run(["rm","-r", "tempDir"])

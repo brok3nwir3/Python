@@ -17,6 +17,7 @@ import os
 
 print("\nRunning WebDataScanner...\n")
 
+#Note the starting directory for later, make a temp directory, and move program to the new directory.
 initial_cwd = os.getcwd()
 proc1 = subprocess.run(["mkdir", "tempDir"])
 os.chdir('tempDir')
@@ -25,22 +26,19 @@ os.chdir('tempDir')
 webpage = input("Enter the target webpage:")
 print("\n")
 
-#Variable to store and format the WGET.
-#wGet = "wget -S -np " + webpage
-
 proc2 = subprocess.run(["wget", "-q", "-np", webpage])
 #proc2 = subprocess.run(["wget", "-S", "-np", webpage], capture_output=True)
 
-# -q = turn off output
-# -S = headers
-# -np = no parents directories
-# -nd = prevents directories from being created
-# -r = resursive
-# -A = accept... add "html" or w/e
-# -l 1 = set recusion depth to one
-# --delete-after = removes locally downloaded files
-# working command...
-#  wget -nd -r -l 1 -np https://www.csusm.edu/about/contact.html
+#WGET Quick Reference:
+# -q = Turn off output.
+# -S = Include server response headers.
+# -np = No parents directories.
+# -nd = Prevents new directories from being created.
+# -r = Resursively pull files from directories.
+# -A = Accept... Sets an accept list for file types, like .html, .pdf, etc.
+# -l 1 = Sets the recusion depth to one, when the '-r' tag is present.
+# Example WGET command...
+#  wget -nd -r -l 1 -np https://www.google.com
 
 #Find all HTML files in the current directory, and store them in an array.
 pageArray = []
@@ -73,7 +71,7 @@ targetFile = open("temp.txt","r")
 for line in targetFile:
         phoneType1 = re.search(r'([>\n\s]{1}\d\d\d[.-]+\d\d\d[.-]+\d\d\d\d[\s\n<]{1})', line)
         if phoneType1:
-                print(phoneType1.group().replace('<','').replace('>',''))
+                print(phoneType1.group().replace('<','').replace('>','').replace(' ',''))
         phoneType2 = re.search(r'([>\n\s]{1}\(+\d\d\d+\)+\s\d\d\d+([ ]{0,1})+([.-]{0,1})+\d\d\d\d[\s\n<]{1})', line)
         if phoneType2:
                 print(phoneType2.group().replace('<','').replace('>',''))
@@ -84,7 +82,7 @@ targetFile = open("temp.txt", "r")
 for line in targetFile:
         ssn = re.search(r'([>\n\s]{1}\d{3}[-]+\d{2}[-]+\d{4}[\s\n<]{1})', line)
         if ssn:
-                print(ssn.group().replace('<','').replace('>',''))
+                print(ssn.group().replace('<','').replace('>','').replace(' ',''))
 
 #Search the target file for credit card numbers.
 print("\nPossible Credit Card Numbers:")
@@ -95,7 +93,7 @@ for line in targetFile:
                 print(ccnType1.group().replace('<','').replace('>',''))
         ccnType2 = re.search(r'([>\n\s]{1}\d{4}[-]\d{4}[-]\d{4}[-]\d{4}[\s\n<]{1})', line)
         if ccnType2:
-                print(ccnType2.group().replace('<','').replace('>',''))
+                print(ccnType2.group().replace('<','').replace('>','').replace(' ',''))
 
 #Search the target file for interesting strings.
 interestingStrings = False
@@ -161,5 +159,6 @@ if interestingStrings == True:
 #Close the temp file.
 targetFile.close()
 
+#Return to the program to the original directory, then remove the temp directory.
 os.chdir(initial_cwd)
 proc3 = subprocess.run(["rm","-r", "tempDir"])

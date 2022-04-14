@@ -1,6 +1,6 @@
 #WebDataScanner
 #A Python3 program by brok3nwir3 
-#This program that takes a webpage as input, then scans the page and it's HTML code for sensitive data.
+#This program takes a URL as an input, then scans the page and it's HTML code for sensitive data, or downloads specific files.
 
 #----IMPORT REQUIRED LIBRARIES----
 
@@ -137,10 +137,14 @@ def search4interesting():
 
 print("\nRunning WebDataScanner...\n")
 
+#Have user select a query type.
 print("Query Options...")
 print("1 - Page Query")
 print("2 - Directory Query")
 print("3 - Full website Query")
+print("File Options...")
+print("4 - Download PDFs from directory")
+print("5 - Download .doc and .docx from directory")
 
 queryType = input("\nSpecify query type: ")
 if queryType == '':
@@ -153,7 +157,6 @@ if webpage == '':
         print("Empty target parameter. Exiting.")
         quit()
 
-
 #Note the starting directory for later, make a temp directory, and move program to the new dir>
 initial_cwd = os.getcwd()
 proc1 = subprocess.run(["mkdir", "tempDir"])
@@ -165,7 +168,12 @@ if queryType == '1':
 if queryType =='2':
         proc2 = subprocess.run(["wget", "-q", "-np", "-nd", "--show-progress", "-r", "-l 1", webpage])
 if queryType =='3':
-        proc2 = subprocess.run(["wget", "-q", "-np", webpage])
+        print("** Warning **")
+        proceed = input("A full website query is quite noisy and may take a long time. Press 'y' to continue: ")
+        if proceed == 'y':
+                proc2 = subprocess.run(["wget", "-q", "--show-progress", webpage])
+        else:
+                quit()
 
 #WGET Quick Reference:
 # -q = Turn off output.
@@ -173,11 +181,13 @@ if queryType =='3':
 # -np = No parents directories.
 # -nd = Prevents new directories from being created.
 # -r = Resursively pull files from directories.
-# -A = Accept... Sets an accept list for file types, like .html, .pdf, etc.
+# -R = Reject... Set a list for rejected file types, like .txt, .xml, etc.
+# -A = Accept... Sets a list for accepted file types, like .html, .pdf, etc.
 # -l 1 = Sets the recusion depth to one, when the '-r' tag is present.
 # --show-progress = Displays a download progress bar.
-# Example WGET command...
+# Example WGET commands...
 #  wget -nd -r -l 1 -np https://www.google.com
+# wget -q --show-progress -A "*.mp3" https://www.example.com
 
 files2temp()
 

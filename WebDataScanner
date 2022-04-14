@@ -13,6 +13,126 @@ import glob
 #Import the library for interacting with the OS.
 import os
 
+#----DEFINE FUNCTIONS----
+
+def files2temp():
+        #Find all HTML files in the current directory (tempDir), and store them in an array.
+        pageArray = []
+        for file in glob.glob("*"):
+                if not file.startswith('WebDataScanner.py') and not file.startswith('temp.txt'):
+                        pageArray.append(file)
+
+        #Writes all the contents of the downloaded files into a single temp.txt output file.
+        my_cmd = ['cat'] + pageArray  #input_files
+        with open('temp.txt', "w") as outfile:
+                subprocess.run(my_cmd, stdout=outfile)
+
+#Note for the following code...
+#HTML from WGET often contains strings with a less than or greater than symbols for HTML tags...
+#This means strings may be delimited with '<' or '>' rather than \n or \s in many cases.
+
+def search4email():
+        #Search the target file for email addresses.
+        print("Possible Emails:")
+        targetFile = open("temp.txt","r")
+        for line in targetFile:
+                email = re.search(r'[\w.-]+@[\w.-]+', line)
+                if email:
+                        print(email.group())
+        targetFile.close()
+
+def search4phone():
+        #Search the target file for phone numbers.
+        print("\nPossible Phone Numbers:")
+        targetFile = open("temp.txt","r")
+        for line in targetFile:
+                phoneType1 = re.search(r'([>\n\s]{1}\d\d\d[.-]+\d\d\d[.-]+\d\d\d\d[\s\n<]{1})', line)
+                if phoneType1:
+                        print(phoneType1.group().replace('<','').replace('>','').replace(' ',''))
+                phoneType2 = re.search(r'([>\n\s]{1}\(+\d\d\d+\)+\s\d\d\d+([ ]{0,1})+([.-]{0,1})+\d\d\d\d[\s\n<]{1})', line)
+                if phoneType2:
+                        print(phoneType2.group().replace('<','').replace('>',''))
+        targetFile.close()
+
+def search4social():
+        #Search the target file for social security numbers.
+        print("\nPossible Social Security Numbers:")
+        targetFile = open("temp.txt", "r")
+        for line in targetFile:
+                ssn = re.search(r'([>\n\s]{1}\d{3}[-]+\d{2}[-]+\d{4}[\s\n<]{1})', line)
+                if ssn:
+                        print(ssn.group().replace('<','').replace('>','').replace(' ',''))
+        targetFile.close()
+
+def search4cc():
+        #Search the target file for credit card numbers.
+        print("\nPossible Credit Card Numbers:")
+        targetFile = open("temp.txt", "r")
+        for line in targetFile:
+                ccnType1 = re.search(r'([>\n\s]{1}\d{4}\s\d{4}\s\d{4}\s\d{4}[\s\n<]{1})', line)
+                if ccnType1:
+                        print(ccnType1.group().replace('<','').replace('>',''))
+                ccnType2 = re.search(r'([>\n\s]{1}\d{4}[-]\d{4}[-]\d{4}[-]\d{4}[\s\n<]{1})', line)
+                if ccnType2:
+                        print(ccnType2.group().replace('<','').replace('>','').replace(' ',''))
+        targetFile.close()
+
+def search4interesting():
+        #Search the target file for interesting strings.
+        interestingStrings = False
+        interestingList = []
+
+        targetFile = open("temp.txt","r")
+        for line in targetFile:
+                check1 = re.search(r'api=', line)
+                if check1:
+                        interestingList.append("api=")
+                        break
+        targetFile = open("temp.txt","r")
+        for line in targetFile:
+                check2 = re.search(r'token=', line)
+                if check2:
+                        interestingList.append("token=")
+                        break
+        targetFile = open("temp.txt","r")
+        for line in targetFile:
+                check3 = re.search(r'session=', line)
+                if check3:
+                        interestingList.append("session=")
+                        break
+        targetFile = open("temp.txt","r")
+        for line in targetFile:
+                check4 = re.search(r'sessionid=', line)
+                if check4:
+                        interestingList.append("sessionid=")
+                        break
+        targetFile = open("temp.txt","r")
+        for line in targetFile:
+                check5 = re.search(r'userid=', line)
+                if check5:
+                        interestingList.append("userid=")
+                        break
+        targetFile = open("temp.txt","r")
+        for line in targetFile:
+                check6 = re.search(r'cookie=', line)
+                if check6:
+                        interestingList.append("cookie=")
+                        break
+
+        #Check whether interesting strings were found.
+        if len(interestingList) > 0:
+                interestingStrings = True
+
+        #If interesting strings were found, provide option to list items.
+        if interestingStrings == True:
+                print("\nInteresting code strings were detected.")
+                proceed = input("\nPress \'y\' to view or \'n\' to exit:")
+                if proceed == 'y':
+                        print("\nOne or more instances of...")
+                        for x in range(len(interestingList)):
+                                print(interestingList[x])
+        targetFile.close()
+
 #----PROGRAM STARTS HERE----
 
 print("\nRunning WebDataScanner...\n")
@@ -37,7 +157,7 @@ else:
         quit()
 
 #Prompt user for a target, and store the value.
-webpage = input("Enter the target webpage:")
+webpage = input("\nEnter the target webpage:")
 
 if webpage == '':
         quit()
@@ -61,124 +181,17 @@ proc2 = subprocess.run(["wget", "-q", "-np", webpage])
 # Example WGET command...
 #  wget -nd -r -l 1 -np https://www.google.com
 
-#Find all HTML files in the current directory, and store them in an array.
-pageArray = []
-for file in glob.glob("*"):
-        if not file.startswith('WebDataScanner.py') and not file.startswith('temp.txt'):
-                pageArray.append(file)
-
-#Writes all the contents of the downloaded files into a single temp.txt output file.
-my_cmd = ['cat'] + pageArray  #input_files
-with open('temp.txt', "w") as outfile:
-        subprocess.run(my_cmd, stdout=outfile)
+files2temp()
 
 #----STRING SEARCHING BEGINS----
 
-#Search the target file for email addresses.
-print("Possible Emails:")
-targetFile = open("temp.txt","r")
-for line in targetFile:
-        email = re.search(r'[\w.-]+@[\w.-]+', line)
-        if email:
-                print(email.group())
-
-#Note for the following code...
-#HTML from WGET often contains strings with a less than or greater than symbols for HTML tags...
-#This means strings may be delimited with '<' or '>' rather than \n or \s in many cases.
-
-#Search the target file for phone numbers.
-print("\nPossible Phone Numbers:")
-targetFile = open("temp.txt","r")
-for line in targetFile:
-        phoneType1 = re.search(r'([>\n\s]{1}\d\d\d[.-]+\d\d\d[.-]+\d\d\d\d[\s\n<]{1})', line)
-        if phoneType1:
-                print(phoneType1.group().replace('<','').replace('>','').replace(' ',''))
-        phoneType2 = re.search(r'([>\n\s]{1}\(+\d\d\d+\)+\s\d\d\d+([ ]{0,1})+([.-]{0,1})+\d\d\d\d[\s\n<]{1})', line)
-        if phoneType2:
-                print(phoneType2.group().replace('<','').replace('>',''))
-
-#Search the target file for social security numbers.
-print("\nPossible Social Security Numbers:")
-targetFile = open("temp.txt", "r")
-for line in targetFile:
-        ssn = re.search(r'([>\n\s]{1}\d{3}[-]+\d{2}[-]+\d{4}[\s\n<]{1})', line)
-        if ssn:
-                print(ssn.group().replace('<','').replace('>','').replace(' ',''))
-
-#Search the target file for credit card numbers.
-print("\nPossible Credit Card Numbers:")
-targetFile = open("temp.txt", "r")
-for line in targetFile:
-        ccnType1 = re.search(r'([>\n\s]{1}\d{4}\s\d{4}\s\d{4}\s\d{4}[\s\n<]{1})', line)
-        if ccnType1:
-                print(ccnType1.group().replace('<','').replace('>',''))
-        ccnType2 = re.search(r'([>\n\s]{1}\d{4}[-]\d{4}[-]\d{4}[-]\d{4}[\s\n<]{1})', line)
-        if ccnType2:
-                print(ccnType2.group().replace('<','').replace('>','').replace(' ',''))
-
-#Search the target file for interesting strings.
-interestingStrings = False
-interestingList = []
-
-targetFile = open("temp.txt","r")
-for line in targetFile:
-        check1 = re.search(r'api=', line)
-        if check1:
-                interestingList.append("api=")
-                break
-
-targetFile = open("temp.txt","r")
-for line in targetFile:
-        check2 = re.search(r'token=', line)
-        if check2:
-                interestingList.append("token=")
-                break
-
-targetFile = open("temp.txt","r")
-for line in targetFile:
-        check3 = re.search(r'session=', line)
-        if check3:
-                interestingList.append("session=")
-                break
-
-targetFile = open("temp.txt","r")
-for line in targetFile:
-        check4 = re.search(r'sessionid=', line)
-        if check4:
-                interestingList.append("sessionid=")
-                break
-
-targetFile = open("temp.txt","r")
-for line in targetFile:
-        check5 = re.search(r'userid=', line)
-        if check5:
-                interestingList.append("userid=")
-                break
-
-targetFile = open("temp.txt","r")
-for line in targetFile:
-        check6 = re.search(r'cookie=', line)
-        if check6:
-                interestingList.append("cookie=")
-                break
-
-#Check whether interesting strings were found.
-if len(interestingList) > 0:
-        interestingStrings = True
-
-#If interesting strings were found, provide option to list items.
-if interestingStrings == True:
-        print("\nInteresting code strings were detected.")
-        proceed = input("\nPress \'y\' to view or \'n\' to exit:")
-        if proceed == 'y':
-                print("\nOne or more instances of...")
-                for x in range(len(interestingList)):
-                        print(interestingList[x])
+search4email()
+search4phone()
+search4social()
+search4cc()
+search4interesting()
 
 #----CLEAN UP STEPS----
-
-#Close the temp file.
-targetFile.close()
 
 #Return to the program to the original directory, then remove the temp directory.
 os.chdir(initial_cwd)

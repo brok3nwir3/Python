@@ -17,14 +17,35 @@ import os
 
 print("\nRunning WebDataScanner...\n")
 
-#Note the starting directory for later, make a temp directory, and move program to the new directory.
-initial_cwd = os.getcwd()
-proc1 = subprocess.run(["mkdir", "tempDir"])
-os.chdir('tempDir')
+print("Query Options...")
+print("1 - Page Query")
+print("2 - Directory Query")
+print("3 - Full website Query")
+
+queryType = input("\nSpecify query type:")
+
+if queryType == '1':
+        print("option 1 selected")
+
+elif queryType == '2':
+        print("option 2 selected")
+
+elif queryType == '3':
+        print("option 3 selected")
+
+else:
+        quit()
 
 #Prompt user for a target, and store the value.
 webpage = input("Enter the target webpage:")
-print("\n")
+
+if webpage == '':
+        quit()
+
+#Note the starting directory for later, make a temp directory, and move program to the new dir>
+initial_cwd = os.getcwd()
+proc1 = subprocess.run(["mkdir", "tempDir"])
+os.chdir('tempDir')
 
 proc2 = subprocess.run(["wget", "-q", "-np", webpage])
 #proc2 = subprocess.run(["wget", "-S", "-np", webpage], capture_output=True)

@@ -27,7 +27,7 @@ def files2temp():
         with open('temp.txt', "w") as outfile:
                 subprocess.run(my_cmd, stdout=outfile)
 
-#Note for the following code...
+#Note for some of the following functions...
 #HTML from WGET often contains strings with a less than or greater than symbols for HTML tags...
 #This means strings may be delimited with '<' or '>' rather than \n or \s in many cases.
 
@@ -142,33 +142,30 @@ print("1 - Page Query")
 print("2 - Directory Query")
 print("3 - Full website Query")
 
-queryType = input("\nSpecify query type:")
-
-if queryType == '1':
-        print("option 1 selected")
-
-elif queryType == '2':
-        print("option 2 selected")
-
-elif queryType == '3':
-        print("option 3 selected")
-
-else:
+queryType = input("\nSpecify query type: ")
+if queryType == '':
+        print("Empty option parameter. Exiting.")
         quit()
 
 #Prompt user for a target, and store the value.
-webpage = input("\nEnter the target webpage:")
-
+webpage = input("\nEnter target URL: ")
 if webpage == '':
+        print("Empty target parameter. Exiting.")
         quit()
+
 
 #Note the starting directory for later, make a temp directory, and move program to the new dir>
 initial_cwd = os.getcwd()
 proc1 = subprocess.run(["mkdir", "tempDir"])
 os.chdir('tempDir')
 
-proc2 = subprocess.run(["wget", "-q", "-np", webpage])
-#proc2 = subprocess.run(["wget", "-S", "-np", webpage], capture_output=True)
+#Select WGET (plus parameters), based on selected query option.
+if queryType == '1':
+        proc2 = subprocess.run(["wget", "-q", "-np", "--show-progress", webpage])
+if queryType =='2':
+        proc2 = subprocess.run(["wget", "-q", "-np", "-nd", "--show-progress", "-r", "-l 1", webpage])
+if queryType =='3':
+        proc2 = subprocess.run(["wget", "-q", "-np", webpage])
 
 #WGET Quick Reference:
 # -q = Turn off output.
@@ -178,13 +175,15 @@ proc2 = subprocess.run(["wget", "-q", "-np", webpage])
 # -r = Resursively pull files from directories.
 # -A = Accept... Sets an accept list for file types, like .html, .pdf, etc.
 # -l 1 = Sets the recusion depth to one, when the '-r' tag is present.
+# --show-progress = Displays a download progress bar.
 # Example WGET command...
 #  wget -nd -r -l 1 -np https://www.google.com
 
 files2temp()
 
-#----STRING SEARCHING BEGINS----
+#----BEGIN STRING SEARCHING----
 
+print()
 search4email()
 search4phone()
 search4social()

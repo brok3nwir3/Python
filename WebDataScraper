@@ -1,6 +1,6 @@
-#WebDataScanner
+#WebDataScraper
 #A Python3 program by Phil van der Linden.
-#This program takes a URL as input, then scans the URL and it's HTML code for sensitive data.
+#This program takes a URL as input, then scrapes the URL and it's HTML code for sensitive data.
 
 #----IMPORT REQUIRED LIBRARIES----
 
@@ -27,7 +27,7 @@ def files2temp():
         #Find all HTML files in the current directory (tempDir), and store them in an array.
         pageArray = []
         for file in glob.glob("*"):
-                if not file.startswith('WebDataScanner.py') and not file.startswith('temp.txt'):
+                if not file.startswith('WebDataScraper.py') and not file.startswith('temp.txt'):
                         pageArray.append(file)
 
         #Writes all the contents of the downloaded files into a single temp.txt output file.
@@ -155,7 +155,7 @@ def search4interesting():
 
 print()
 print("|-------------------------------|")
-print("| Running WebDataScanner...     |")
+print("| Running WebDataScraper...     |")
 print("|-------------------------------|")
 print()
 date_cmd = ['date']
@@ -167,9 +167,9 @@ print("Query Options...")
 print("1 - Page Query")
 print("2 - Directory Query")
 print("3 - Full website Query")
-print("\nFile Options...")
-print("4 - Download PDFs from directory")
-print("5 - Download .doc and .docx from directory")
+#print("\nFile Options...")
+#print("4 - Download PDFs from directory")
+#print("5 - Download .doc and .docx from directory")
 
 queryType = input("\nSpecify query type: ")
 if queryType == '':
@@ -218,7 +218,7 @@ if queryType =='3':
 files2temp()
 
 #Setup header for Search_Results.txt.
-resultsFile.write("+++++ WebDataScanner Results +++++\n\n")
+resultsFile.write("+++++ WebDataScraper Results +++++\n\n")
 resultsFile.write("Target: " + webpage + "\n\n")
 
 #----BEGIN STRING SEARCHING----

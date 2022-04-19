@@ -1,17 +1,22 @@
 #WebDataScanner
-#A Python3 program by brok3nwir3 
-#This program takes a URL as an input, then scans the page and it's HTML code for sensitive data, or downloads specific files.
+#A Python3 program by Phil van der Linden.
+#This program takes a URL as input, then scans the URL and it's HTML code for sensitive data.
 
 #----IMPORT REQUIRED LIBRARIES----
 
 #Import the library for interpreting Bash commands.
 import subprocess
-#Import the library for regular expression string matching.
+#Import the library for regular expression pattern matching.
 import re
 #Import the libarary for matching Unix-style pathname patterns.
 import glob
 #Import the library for interacting with the OS.
 import os
+
+#----DEFINE VARIABLES----
+
+global interestingList
+interestingList = []
 
 #----DEFINE FUNCTIONS----
 
@@ -23,7 +28,7 @@ def files2temp():
                         pageArray.append(file)
 
         #Writes all the contents of the downloaded files into a single temp.txt output file.
-        my_cmd = ['cat'] + pageArray  #input_files
+        my_cmd = ['cat'] + pageArray
         with open('temp.txt', "w") as outfile:
                 subprocess.run(my_cmd, stdout=outfile)
 
@@ -80,7 +85,7 @@ def search4cc():
 def search4interesting():
         #Search the target file for interesting strings.
         interestingStrings = False
-        interestingList = []
+        #interestingList = []
 
         targetFile = open("temp.txt","r")
         for line in targetFile:
@@ -136,13 +141,16 @@ def search4interesting():
 #----PROGRAM STARTS HERE----
 
 print("\nRunning WebDataScanner...\n")
+date_cmd = ['date']
+subprocess.run(date_cmd)
+print()
 
 #Have user select a query type.
 print("Query Options...")
 print("1 - Page Query")
 print("2 - Directory Query")
 print("3 - Full website Query")
-print("File Options...")
+print("\nFile Options...")
 print("4 - Download PDFs from directory")
 print("5 - Download .doc and .docx from directory")
 
@@ -200,8 +208,27 @@ search4social()
 search4cc()
 search4interesting()
 
+#Return to the program to the original directory.
+os.chdir(initial_cwd)
+
+#----RESULTS REPORTING----
+
+saveName = webpage + "_results"
+resultsFile = open("test.txt", "w")
+
+print("\nWould you like to save these results?")
+proceed = input("\nPress \'y\' to save or \'n\' to exit:")
+if proceed == 'y':
+        print("\nSaved " + saveName + ".txt to the current working directory.")
+        resultsFile.write("+++++ WebDataScanner Results +++++\n\n")
+        resultsFile.write("Target: " + webpage + "\n\n")
+        resultsFile.write("Interesting Strings Detected:\n")
+        for element in interestingList:
+                resultsFile.write(element + "\n")
+
+resultsFile.close()
+
 #----CLEAN UP STEPS----
 
-#Return to the program to the original directory, then remove the temp directory.
-os.chdir(initial_cwd)
+#Remove the temp directory, and its contents.
 proc3 = subprocess.run(["rm","-r", "tempDir"])

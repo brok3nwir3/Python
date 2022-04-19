@@ -13,10 +13,13 @@ import glob
 #Import the library for interacting with the OS.
 import os
 
-#----DEFINE VARIABLES----
+#----DEFINE GLOBAL VARIABLES----
 
 global interestingList
 interestingList = []
+
+global resultsFile
+resultsFile = open("search_results.txt", "w")
 
 #----DEFINE FUNCTIONS----
 
@@ -39,53 +42,63 @@ def files2temp():
 def search4email():
         #Search the target file for email addresses.
         print("Possible Emails:")
+        resultsFile.write("Possible Emails:\n")
         targetFile = open("temp.txt","r")
         for line in targetFile:
                 email = re.search(r'[\w.-]+@[\w.-]+', line)
                 if email:
                         print(email.group())
+                        resultsFile.write(email.group() + "\n")
         targetFile.close()
 
 def search4phone():
         #Search the target file for phone numbers.
         print("\nPossible Phone Numbers:")
+        resultsFile.write("\nPossible Phone Numbers:\n")
         targetFile = open("temp.txt","r")
         for line in targetFile:
                 phoneType1 = re.search(r'([>\n\s]{1}\d\d\d[.-]+\d\d\d[.-]+\d\d\d\d[\s\n<]{1})', line)
                 if phoneType1:
                         print(phoneType1.group().replace('<','').replace('>','').replace(' ',''))
+                        resultsFile.write(phoneType1.group() + "\n")
                 phoneType2 = re.search(r'([>\n\s]{1}\(+\d\d\d+\)+\s\d\d\d+([ ]{0,1})+([.-]{0,1})+\d\d\d\d[\s\n<]{1})', line)
                 if phoneType2:
                         print(phoneType2.group().replace('<','').replace('>',''))
+                        resultsFile.write(phoneType2.group() + "\n")
         targetFile.close()
 
 def search4social():
         #Search the target file for social security numbers.
         print("\nPossible Social Security Numbers:")
+        resultsFile.write("\nPossible Social Security Numbers:\n")
         targetFile = open("temp.txt", "r")
         for line in targetFile:
                 ssn = re.search(r'([>\n\s]{1}\d{3}[-]+\d{2}[-]+\d{4}[\s\n<]{1})', line)
                 if ssn:
                         print(ssn.group().replace('<','').replace('>','').replace(' ',''))
+                        resultsFile.write(ssn.group() + "\n")
         targetFile.close()
 
 def search4cc():
         #Search the target file for credit card numbers.
         print("\nPossible Credit Card Numbers:")
+        resultsFile.write("\nPossible Credit Card Numbers:\n")
         targetFile = open("temp.txt", "r")
         for line in targetFile:
                 ccnType1 = re.search(r'([>\n\s]{1}\d{4}\s\d{4}\s\d{4}\s\d{4}[\s\n<]{1})', line)
                 if ccnType1:
                         print(ccnType1.group().replace('<','').replace('>',''))
+                        resultsFile.write(ccnType1.group() + "\n")
                 ccnType2 = re.search(r'([>\n\s]{1}\d{4}[-]\d{4}[-]\d{4}[-]\d{4}[\s\n<]{1})', line)
                 if ccnType2:
                         print(ccnType2.group().replace('<','').replace('>','').replace(' ',''))
+                        resultsFile.write(ccnType2.group() + "\n")
         targetFile.close()
 
 def search4interesting():
         #Search the target file for interesting strings.
         interestingStrings = False
-        #interestingList = []
+        resultsFile.write("\nInteresting Strings Detected:\n")
 
         targetFile = open("temp.txt","r")
         for line in targetFile:
@@ -140,7 +153,11 @@ def search4interesting():
 
 #----PROGRAM STARTS HERE----
 
-print("\nRunning WebDataScanner...\n")
+print()
+print("|-------------------------------|")
+print("| Running WebDataScanner...     |")
+print("|-------------------------------|")
+print()
 date_cmd = ['date']
 subprocess.run(date_cmd)
 print()
@@ -171,6 +188,7 @@ proc1 = subprocess.run(["mkdir", "tempDir"])
 os.chdir('tempDir')
 
 #Select WGET (plus parameters), based on selected query option.
+print("\nAnalyzing files...")
 if queryType == '1':
         proc2 = subprocess.run(["wget", "-q", "-np", "--show-progress", webpage])
 if queryType =='2':
@@ -199,6 +217,10 @@ if queryType =='3':
 
 files2temp()
 
+#Setup header for Search_Results.txt.
+resultsFile.write("+++++ WebDataScanner Results +++++\n\n")
+resultsFile.write("Target: " + webpage + "\n\n")
+
 #----BEGIN STRING SEARCHING----
 
 print()
@@ -211,24 +233,27 @@ search4interesting()
 #Return to the program to the original directory.
 os.chdir(initial_cwd)
 
-#----RESULTS REPORTING----
-
-saveName = webpage + "_results"
-resultsFile = open("test.txt", "w")
+#----SAVING RESULTS----
 
 print("\nWould you like to save these results?")
+saveResults = False
 proceed = input("\nPress \'y\' to save or \'n\' to exit:")
 if proceed == 'y':
+        saveResults = True
+        saveName = webpage + "_results"
+#       resultsFile = open("search_results.txt", "w")
         print("\nSaved " + saveName + ".txt to the current working directory.")
-        resultsFile.write("+++++ WebDataScanner Results +++++\n\n")
-        resultsFile.write("Target: " + webpage + "\n\n")
-        resultsFile.write("Interesting Strings Detected:\n")
         for element in interestingList:
                 resultsFile.write(element + "\n")
-
-resultsFile.close()
+#       for element in emailList:
+#               resultsFile.write(element + "\n")
+        resultsFile.close()
 
 #----CLEAN UP STEPS----
 
 #Remove the temp directory, and its contents.
 proc3 = subprocess.run(["rm","-r", "tempDir"])
+
+#Remove the search results, if unwanted.
+if saveResults == False:
+        proc4 = subprocess.run(["rm", "search_results.txt"])

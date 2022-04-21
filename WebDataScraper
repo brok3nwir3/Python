@@ -59,12 +59,12 @@ def search4phone():
         for line in targetFile:
                 phoneType1 = re.search(r'([>\n\s]{1}\d\d\d[.-]+\d\d\d[.-]+\d\d\d\d[\s\n<]{1})', line)
                 if phoneType1:
-                        print(phoneType1.group().replace('<','').replace('>','').replace(' ',''))
-                        resultsFile.write(phoneType1.group() + "\n")
+                        print(phoneType1.group().replace('<','').replace('>','').replace(' ','').replace('\n',''))
+                        resultsFile.write(phoneType1.group().replace('<','').replace('>','').replace('\n','') + "\n")
                 phoneType2 = re.search(r'([>\n\s]{1}\(+\d\d\d+\)+\s\d\d\d+([ ]{0,1})+([.-]{0,1})+\d\d\d\d[\s\n<]{1})', line)
                 if phoneType2:
-                        print(phoneType2.group().replace('<','').replace('>',''))
-                        resultsFile.write(phoneType2.group() + "\n")
+                        print(phoneType2.group().replace('<','').replace('>','').replace('\n',''))
+                        resultsFile.write(phoneType2.group().replace('<','').replace('>','').replace('\n','') + "\n")
         targetFile.close()
 
 def search4social():
@@ -75,8 +75,8 @@ def search4social():
         for line in targetFile:
                 ssn = re.search(r'([>\n\s]{1}\d{3}[-]+\d{2}[-]+\d{4}[\s\n<]{1})', line)
                 if ssn:
-                        print(ssn.group().replace('<','').replace('>','').replace(' ',''))
-                        resultsFile.write(ssn.group() + "\n")
+                        print(ssn.group().replace('<','').replace('>','').replace(' ','').replace('\n',''))
+                        resultsFile.write(ssn.group().replace('<','').replace('>','').replace(' ','').replace('\n','') + "\n")
         targetFile.close()
 
 def search4cc():
@@ -88,11 +88,11 @@ def search4cc():
                 ccnType1 = re.search(r'([>\n\s]{1}\d{4}\s\d{4}\s\d{4}\s\d{4}[\s\n<]{1})', line)
                 if ccnType1:
                         print(ccnType1.group().replace('<','').replace('>',''))
-                        resultsFile.write(ccnType1.group() + "\n")
+                        resultsFile.write(ccnType1.group().replace('<','').replace('>','').replace('\n','') + "\n")
                 ccnType2 = re.search(r'([>\n\s]{1}\d{4}[-]\d{4}[-]\d{4}[-]\d{4}[\s\n<]{1})', line)
                 if ccnType2:
-                        print(ccnType2.group().replace('<','').replace('>','').replace(' ',''))
-                        resultsFile.write(ccnType2.group() + "\n")
+                        print(ccnType2.group().replace('<','').replace('>','').replace(' ','').replace('\n',''))
+                        resultsFile.write(ccnType2.group().replace('<','').replace('>','').replace('\n','') + "\n")
         targetFile.close()
 
 def search4interesting():
@@ -155,10 +155,11 @@ def search4interesting():
 
 print()
 print("|-------------------------------|")
-print("| Running WebDataScraper...     |")
+print("|   Running WebDataScraper...   |")
 print("|-------------------------------|")
 print()
 date_cmd = ['date']
+print("Started at...")
 subprocess.run(date_cmd)
 print()
 

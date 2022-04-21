@@ -23,14 +23,12 @@ resultsFile = open("search_results.txt", "w")
 
 #----DEFINE FUNCTIONS----
 
+#Function to find all downloaded files in the current directory (tempDir), store them in an array, and then merge them into temp.txt output file.
 def files2temp():
-        #Find all HTML files in the current directory (tempDir), and store them in an array.
         pageArray = []
         for file in glob.glob("*"):
                 if not file.startswith('WebDataScraper.py') and not file.startswith('temp.txt'):
                         pageArray.append(file)
-
-        #Writes all the contents of the downloaded files into a single temp.txt output file.
         my_cmd = ['cat'] + pageArray
         with open('temp.txt', "w") as outfile:
                 subprocess.run(my_cmd, stdout=outfile)
@@ -39,8 +37,8 @@ def files2temp():
 #HTML from WGET often contains strings with a less than or greater than symbols for HTML tags...
 #This means strings may be delimited with '<' or '>' rather than \n or \s in many cases.
 
+#Function to search the target file for email addresses.
 def search4email():
-        #Search the target file for email addresses.
         print("Possible Emails:")
         resultsFile.write("Possible Emails:\n")
         targetFile = open("temp.txt","r")
@@ -51,8 +49,8 @@ def search4email():
                         resultsFile.write(email.group().replace('<','').replace('>','').replace(' ','').replace('\n','') + "\n")
         targetFile.close()
 
+#Function to search the target file for phone numbers.
 def search4phone():
-        #Search the target file for phone numbers.
         print("\nPossible Phone Numbers:")
         resultsFile.write("\nPossible Phone Numbers:\n")
         targetFile = open("temp.txt","r")
@@ -67,8 +65,8 @@ def search4phone():
                         resultsFile.write(phoneType2.group().replace('<','').replace('>','').replace('\n','') + "\n")
         targetFile.close()
 
+#Function to search the target file for social security numbers.
 def search4social():
-        #Search the target file for social security numbers.
         print("\nPossible Social Security Numbers:")
         resultsFile.write("\nPossible Social Security Numbers:\n")
         targetFile = open("temp.txt", "r")
@@ -79,8 +77,8 @@ def search4social():
                         resultsFile.write(ssn.group().replace('<','').replace('>','').replace(' ','').replace('\n','') + "\n")
         targetFile.close()
 
+#Function to search the target file for credit card numbers.
 def search4cc():
-        #Search the target file for credit card numbers.
         print("\nPossible Credit Card Numbers:")
         resultsFile.write("\nPossible Credit Card Numbers:\n")
         targetFile = open("temp.txt", "r")
@@ -95,8 +93,8 @@ def search4cc():
                         resultsFile.write(ccnType2.group().replace('<','').replace('>','').replace('\n','') + "\n")
         targetFile.close()
 
+#Function to search the target file for interesting strings.
 def search4interesting():
-        #Search the target file for interesting strings.
         interestingStrings = False
         resultsFile.write("\nInteresting Strings Detected:\n")
 
@@ -175,12 +173,14 @@ print("3 - Full website Query")
 queryType = input("\nSpecify query type: ")
 if queryType == '':
         print("Empty option parameter. Exiting.")
+        proc4 = subprocess.run(["rm", "search_results.txt"])
         quit()
 
 #Prompt user for a target, and store the value.
 webpage = input("\nEnter target URL: ")
 if webpage == '':
         print("Empty target parameter. Exiting.")
+        proc4 = subprocess.run(["rm", "search_results.txt"])
         quit()
 
 #Note the starting directory for later, make a temp directory, and move program to the new dir>
@@ -200,6 +200,8 @@ if queryType =='3':
         if proceed == 'y':
                 proc2 = subprocess.run(["wget", "-q", "--show-progress", webpage])
         else:
+                proc3 = subprocess.run(["rm","-r", "tempDir"])
+                proc4 = subprocess.run(["rm", "search_results.txt"])
                 quit()
 
 #WGET Quick Reference:

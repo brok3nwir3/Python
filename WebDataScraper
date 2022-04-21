@@ -61,7 +61,7 @@ def search4phone():
                 if phoneType1:
                         print(phoneType1.group().replace('<','').replace('>','').replace(' ','').replace('\n',''))
                         resultsFile.write(phoneType1.group().replace('<','').replace('>','').replace('\n','') + "\n")
-                phoneType2 = re.search(r'([>\n\s]{1}\(+\d\d\d+\)+\s\d\d\d+([ ]{0,1})+([.-]{0,1})+\d\d\d\d[\s\n<]{1})', line)
+                phoneType2 = re.search(r'([>\n\s]{1}\(+\d\d\d+\)+\s\d\d\d+([ .-]{0,1})+\d\d\d\d[\s\n<]{1})', line)
                 if phoneType2:
                         print(phoneType2.group().replace('<','').replace('>','').replace('\n',''))
                         resultsFile.write(phoneType2.group().replace('<','').replace('>','').replace('\n','') + "\n")

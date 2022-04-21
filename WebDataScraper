@@ -47,8 +47,8 @@ def search4email():
         for line in targetFile:
                 email = re.search(r'[\w.-]+@[\w.-]+', line)
                 if email:
-                        print(email.group())
-                        resultsFile.write(email.group() + "\n")
+                        print(email.group().replace('<','').replace('>','').replace(' ','').replace('\n',''))
+                        resultsFile.write(email.group().replace('<','').replace('>','').replace(' ','').replace('\n','') + "\n")
         targetFile.close()
 
 def search4phone():

@@ -2,6 +2,8 @@
 import discord
 import os
 import random
+import requests
+import json
 from dotenv import load_dotenv
 from discord.ext import commands
 
@@ -19,6 +21,19 @@ bot = commands.Bot(command_prefix=prefix_list, intents=discord.Intents().all())
 @bot.event
 async def on_ready():
         await bot.change_presence(activity=discord.Game(name="in the workshop..."))
+
+def get_quote():
+  response = requests.get("https://zenquotes.io/api/random")
+  json_data = json.loads(response.text)
+  my_quote = json_data[0]['q'] + " -" + json_data[0]['a']
+  return(my_quote)
+
+@bot.command(
+        help="Gives a random quote.",
+        brief="Gives a random quote."
+)
+async def quote(ctx):
+        await ctx.channel.send(get_quote())
 
 # A message interaction function.
 @bot.event

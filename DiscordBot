@@ -17,52 +17,38 @@ prefix_list = ['!', '$']
 # Bot permissions.
 bot = commands.Bot(command_prefix=prefix_list, intents=discord.Intents().all())
 
+# Server specific emoji IDs. Obtained using "/:emote:" .
+crit_emoji = "<:CRIT:925236565989527606>"
+rekt_emoji = "<:REKT:937902738900136057>"
+
 # Set bot status.
 @bot.event
 async def on_ready():
         await bot.change_presence(activity=discord.Game(name="in the workshop..."))
 
+# A function to use pull quotes using an API and parse the JSON data.
 def get_quote():
   response = requests.get("https://zenquotes.io/api/random")
   json_data = json.loads(response.text)
   my_quote = json_data[0]['q'] + " -" + json_data[0]['a']
   return(my_quote)
 
-@bot.command(
-        help="Gives a random quote.",
-        brief="Gives a random quote."
-)
+@bot.command(help="Gives a random quote.")
 async def quote(ctx):
         await ctx.channel.send(get_quote())
 
-# A message interaction function.
+# A message function to greet new server members.
 @bot.event
-async def on_message(message):
-        if message.content == "hi" and message.author != bot.user:
-                await message.channel.send("Hmm... What the hell do you do?")
-        await bot.process_commands(message)
+async def on_member_join(member):
+        await member.send('Welcome to the jungle, punk!')
 
-# A function to have the bot respond to you.
-@bot.command(
-        help="Prints to the channel.",
-        brief="Prints to the channel."
-)
-async def ping(ctx):
-        await ctx.channel.send("Pong.")
-
-# A function to have the bot send a gif.
-@bot.command(
-        help="Bot sends gif1.",
-        brief="Bot sends gif1."
-)
-async def gif1(ctx):
-        await ctx.channel.send(file=discord.File('1.gif'))
+# A function to have the bot send a neat gif.
+@bot.command(help="Takes a photo.")
+async def neat(ctx):
+        await ctx.channel.send(file=discord.File('bender_neat.gif'))
 
 # A simon-says function, which echoes the users string.
-@bot.command(
-        help="Echoes what was said.",
-        brief="Echoes what was said."
-)
+@bot.command(help="Echoes what was said.")
 async def simonsays(ctx, *args):
         response = ""
         for arg in args:
@@ -70,20 +56,27 @@ async def simonsays(ctx, *args):
         await ctx.channel.send(response)
 
 # A D20 rolling function.
-@bot.command(
-        help="Rolls a 20-sided dice.",
-        brief="Rolls a 20-sided dice."
-)
+@bot.command(help="Rolls a 20-sided dice.")
 async def d20(ctx):
-        roll = random.randrange(1,20)
+        roll = random.randrange(1,21)
         if roll == 20:
-                await ctx.channel.send("CRIT!")
-        await ctx.channel.send(roll)
+                await ctx.channel.send("20 " + crit_emoji + " CRIT!")
+        if roll == 1:
+                await ctx.channel.send("1  " + rekt_emoji + "  CRIT FAIL!")
+        elif roll != 1 and roll != 20:
+                await ctx.channel.send(roll)
 
 # Error message function.
 @bot.event
 async def error_response(ctx, error):
         if isinstance(error, commands.errors.CheckFailure):
                 await ctx.send('Sorry, pal. Admins only.')
+
+# A message interaction function.
+@bot.event
+async def on_message(message):
+        if message.content == "hi" and message.author != bot.user:
+                await message.channel.send("Howdy! Use !help to view my commands.")
+        await bot.process_commands(message)
 
 bot.run(DISCORD_TOKEN)

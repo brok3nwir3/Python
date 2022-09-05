@@ -26,14 +26,25 @@ rekt_emoji = "<:REKT:937902738900136057>"
 async def on_ready():
         await bot.change_presence(activity=discord.Game(name="in the workshop..."))
 
-# A function to use pull quotes using an API and parse the JSON data.
-def get_quote():
-  response = requests.get("https://zenquotes.io/api/random")
-  json_data = json.loads(response.text)
-  my_quote = json_data[0]['q'] + " -" + json_data[0]['a']
-  return(my_quote)
+# A function to parse JSON data and pull random waifu images, using an API.
+def get_waifu():
+        response = requests.get("https://api.waifu.pics/sfw/waifu")
+        json_data = json.loads(response.text)
+        json_parsed = json_data['url']
+        return(json_parsed)
 
-@bot.command(help="Gives a random quote.")
+@bot.command(help="Returns a random waifu.")
+async def waifu(ctx):
+        await ctx.channel.send(get_waifu())
+
+# A function to parse JSON data and pull random quores, using an API.
+def get_quote():
+        response = requests.get("https://zenquotes.io/api/random")
+        json_data = json.loads(response.text)
+        json_parsed = json_data[0]['q'] + " -" + json_data[0]['a']
+        return(json_parsed)
+
+@bot.command(help="Returns a random quote.")
 async def quote(ctx):
         await ctx.channel.send(get_quote())
 

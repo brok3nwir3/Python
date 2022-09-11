@@ -27,15 +27,23 @@ async def on_ready():
         await bot.change_presence(activity=discord.Game(name="in the workshop..."))
 
 # A function to parse JSON data and pull random waifu images, using an API.
-def get_waifu():
-        response = requests.get("https://api.waifu.pics/sfw/waifu")
+def get_waifu(waifu_select):
+        response = requests.get("https://api.waifu.pics/sfw/" + waifu_select)
         json_data = json.loads(response.text)
         json_parsed = json_data['url']
         return(json_parsed)
 
-@bot.command(help="Returns a random waifu.")
-async def waifu(ctx):
-        await ctx.channel.send(get_waifu())
+@bot.command(help="Returns a random highfive waifu.")
+async def highfive(ctx):
+        await ctx.channel.send(get_waifu("highfive"))
+
+@bot.command(help="Returns a random yeet waifu.")
+async def yeet(ctx):
+        await ctx.channel.send(get_waifu("yeet"))
+
+@bot.command(help="Returns a random poke waifu.")
+async def poke(ctx):
+        await ctx.channel.send(get_waifu("poke"))
 
 # A function to parse JSON data and pull random quores, using an API.
 def get_quote():

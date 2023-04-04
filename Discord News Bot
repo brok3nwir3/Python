@@ -1,5 +1,5 @@
-# Discord news bot, version 1.0
-# 
+# Discord news bot.
+#
 # IMPORTANT!
 # This bot uses free APIs to retreve various news information. Note the following:
 # 1) You'll need to create free accounts to obtain API keys and use some of the included APIs.
@@ -65,42 +65,42 @@ def get_market():
         json_data = json.loads(response.text)
         json_parsed = json_data['rate']
         result_ltc = "\nLTC **${:,.2f}**".format(json_parsed)
-        response = requests.get("https://rest.coinapi.io/v1/exchangerate/USDT/USD/?apikey=" + CRYPTO_TOKEN)
+        response = requests.get("https://rest.coinapi.io/v1/exchangerate/XMR/USD/?apikey=" + CRYPTO_TOKEN)
         json_data = json.loads(response.text)
         json_parsed = json_data['rate']
-        result_usdt = "\nUSDT **${:,.2f}**".format(json_parsed)
+        result_xmr = "\nXMR **${:,.2f}**".format(json_parsed)
         response = requests.get("https://rest.coinapi.io/v1/exchangerate/USDC/USD/?apikey=" + CRYPTO_TOKEN)
         json_data = json.loads(response.text)
         json_parsed = json_data['rate']
         result_usdc = "\nUSDC **${:,.2f}**".format(json_parsed)
-        result_crypto = "" + illuminati_emoji + " Crypto\n" + result_btc + result_eth + result_ltc + result_usdt + result_usdc + "\n\n"
+        result_crypto = "" + illuminati_emoji + " Crypto\n" + result_btc + result_eth + result_ltc + result_xmr + result_usdc + "\n\n"
         # Stocks
-        response = requests.get("https://api.polygon.io/v2/aggs/ticker/MSFT/range/1/day/"+today_string+"/"+today_string+"?apiKey=" + STOCK_TOKEN)
+        response = requests.get("https://api.polygon.io/v2/aggs/ticker/MSFT/prev?adjusted=true&apiKey=" + STOCK_TOKEN)
         json_data = json.loads(response.text)
         json_stock = json_data['ticker']
         json_price = json_data['results'][0]['c']
         result_msft = "" + json_stock + " **$" + str(json_price) + "**"
-        response = requests.get("https://api.polygon.io/v2/aggs/ticker/AMZN/range/1/day/"+today_string+"/"+today_string+"?apiKey=" + STOCK_TOKEN)
+        response = requests.get("https://api.polygon.io/v2/aggs/ticker/AMZN/prev?adjusted=true&apiKey=" + STOCK_TOKEN)
         json_data = json.loads(response.text)
         json_stock = json_data['ticker']
         json_price = json_data['results'][0]['c']
         result_amzn = "" + json_stock + " **$" + str(json_price) + "**"
-        response = requests.get("https://api.polygon.io/v2/aggs/ticker/AAPL/range/1/day/"+today_string+"/"+today_string+"?apiKey=" + STOCK_TOKEN)
+        response = requests.get("https://api.polygon.io/v2/aggs/ticker/OKTA/prev?adjusted=true&apiKey=" + STOCK_TOKEN)
         json_data = json.loads(response.text)
         json_stock = json_data['ticker']
         json_price = json_data['results'][0]['c']
-        result_aapl = "" + json_stock + " **$" + str(json_price) + "**"
-        response = requests.get("https://api.polygon.io/v2/aggs/ticker/GOOGL/range/1/day/"+today_string+"/"+today_string+"?apiKey=" + STOCK_TOKEN)
+        result_okta = "" + json_stock + " **$" + str(json_price) + "**"
+        response = requests.get("https://api.polygon.io/v2/aggs/ticker/GOOGL/prev?adjusted=true&apiKey=" + STOCK_TOKEN)
         json_data = json.loads(response.text)
         json_stock = json_data['ticker']
         json_price = json_data['results'][0]['c']
         result_googl = "" + json_stock + " **$" + str(json_price) + "**"
-        response = requests.get("https://api.polygon.io/v2/aggs/ticker/TSLA/range/1/day/"+today_string+"/"+today_string+"?apiKey=" + STOCK_TOKEN)
+        response = requests.get("https://api.polygon.io/v2/aggs/ticker/TSLA/prev?adjusted=true&apiKey=" + STOCK_TOKEN)
         json_data = json.loads(response.text)
         json_stock = json_data['ticker']
         json_price = json_data['results'][0]['c']
         result_tsla = "" + json_stock + " **$" + str(json_price) + "**"
-        result_stocks = "" + stonks_emoji  + " The latest closing stock prices...\n" + result_msft + "\n" + result_amzn + "\n" + result_aapl + "\n" + result_googl + "\n" + result_tsla + "\n\n"
+        result_stocks = "" + stonks_emoji  + " The latest closing stock prices...\n" + result_msft + "\n" + result_amzn + "\n" + result_okta + "\n" + result_googl + "\n" + result_tsla + "\n\n"
         # Exchange
         response = requests.get("https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=USD&to_currency=EUR&apikey=" + EXCHANGE_TOKEN)
         json_data = json.loads(response.text)
@@ -164,32 +164,32 @@ async def exchange(ctx):
 #--------------------------------------------------------------------#
 # A function to parse JSON data and pull some current stock prices, using an API.
 def get_stocks():
-        response = requests.get("https://api.polygon.io/v2/aggs/ticker/MSFT/range/1/day/"+today_string+"/"+today_string+"?apiKey=" + STOCK_TOKEN)
+        response = requests.get("https://api.polygon.io/v2/aggs/ticker/MSFT/prev?adjusted=true&apiKey=" + STOCK_TOKEN)
         json_data = json.loads(response.text)
         json_stock = json_data['ticker']
         json_price = json_data['results'][0]['c']
         result_msft = "" + json_stock + " **$" + str(json_price) + "**"
-        response = requests.get("https://api.polygon.io/v2/aggs/ticker/AMZN/range/1/day/"+today_string+"/"+today_string+"?apiKey=" + STOCK_TOKEN)
+        response = requests.get("https://api.polygon.io/v2/aggs/ticker/AMZN/prev?adjusted=true&apiKey=" + STOCK_TOKEN)
         json_data = json.loads(response.text)
         json_stock = json_data['ticker']
         json_price = json_data['results'][0]['c']
         result_amzn = "" + json_stock + " **$" + str(json_price) + "**"
-        response = requests.get("https://api.polygon.io/v2/aggs/ticker/AAPL/range/1/day/"+today_string+"/"+today_string+"?apiKey=" + STOCK_TOKEN)
+        response = requests.get("https://api.polygon.io/v2/aggs/ticker/OKTA/prev?adjusted=true&apiKey=" + STOCK_TOKEN)
         json_data = json.loads(response.text)
         json_stock = json_data['ticker']
         json_price = json_data['results'][0]['c']
-        result_aapl = "" + json_stock + " **$" + str(json_price) + "**"
-        response = requests.get("https://api.polygon.io/v2/aggs/ticker/GOOGL/range/1/day/"+today_string+"/"+today_string+"?apiKey=" + STOCK_TOKEN)
+        result_okta = "" + json_stock + " **$" + str(json_price) + "**"
+        response = requests.get("https://api.polygon.io/v2/aggs/ticker/GOOGL/prev?adjusted=true&apiKey=" + STOCK_TOKEN)
         json_data = json.loads(response.text)
         json_stock = json_data['ticker']
         json_price = json_data['results'][0]['c']
         result_googl = "" + json_stock + " **$" + str(json_price) + "**"
-        response = requests.get("https://api.polygon.io/v2/aggs/ticker/TSLA/range/1/day/"+today_string+"/"+today_string+"?apiKey=" + STOCK_TOKEN)
+        response = requests.get("https://api.polygon.io/v2/aggs/ticker/TSLA/prev?adjusted=true&apiKey=" + STOCK_TOKEN)
         json_data = json.loads(response.text)
         json_stock = json_data['ticker']
         json_price = json_data['results'][0]['c']
         result_tsla = "" + json_stock + " **$" + str(json_price) + "**"
-        result_stocks = "" + stonks_emoji  + "\nThe latest closing stock prices...\n" + result_msft + "\n" + result_amzn + "\n" + result_aapl + "\n" + result_googl + "\n" + result_tsla
+        result_stocks = "" + stonks_emoji  + "\nThe latest closing stock prices...\n" + result_msft + "\n" + result_amzn + "\n" + result_okta + "\n" + result_googl + "\n" + result_tsla
         return(result_stocks)
 
 @bot.command(help="Returns some stock prices.")
@@ -226,7 +226,7 @@ async def date(ctx):
         await ctx.channel.send(get_date())
 
 #--------------------------------------------------------------------#
-# A function to parse JSON data and pull the current price of BTC, using an API.
+# A function to parse JSON data and pull the current price of crypto, using an API.
 def get_crypto():
         response = requests.get("https://rest.coinapi.io/v1/exchangerate/BTC/USD/?apikey=" + CRYPTO_TOKEN)
         json_data = json.loads(response.text)
@@ -240,15 +240,15 @@ def get_crypto():
         json_data = json.loads(response.text)
         json_parsed = json_data['rate']
         result_ltc = "\nLTC **${:,.2f}**".format(json_parsed)
-        response = requests.get("https://rest.coinapi.io/v1/exchangerate/USDT/USD/?apikey=" + CRYPTO_TOKEN)
+        response = requests.get("https://rest.coinapi.io/v1/exchangerate/XMR/USD/?apikey=" + CRYPTO_TOKEN)
         json_data = json.loads(response.text)
         json_parsed = json_data['rate']
-        result_usdt = "\nUSDT **${:,.2f}**".format(json_parsed)
+        result_xmr = "\nXMR **${:,.2f}**".format(json_parsed)
         response = requests.get("https://rest.coinapi.io/v1/exchangerate/USDC/USD/?apikey=" + CRYPTO_TOKEN)
         json_data = json.loads(response.text)
         json_parsed = json_data['rate']
         result_usdc = "\nUSDC **${:,.2f}**".format(json_parsed)
-        result_crypto = ":money_mouth:\nCrypto\n" + result_btc + result_eth + result_ltc + result_usdt + result_usdc
+        result_crypto = ":money_mouth:\nCrypto\n" + result_btc + result_eth + result_ltc + result_xmr + result_usdc
         return(result_crypto)
 
 @bot.command(help="Returns the price of BTC.")

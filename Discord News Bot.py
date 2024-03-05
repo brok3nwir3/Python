@@ -2,7 +2,7 @@
 #
 # IMPORTANT!
 # This bot uses free APIs to retreve various news information. Note the following:
-# 1) You'll need to create free accounts to obtain API keys and use some of the included APIs.
+# 1) You'll need to create free accounts to obtain API keys to use some of the included APIs.
 # 2) Most of the free APIs limit you to x5 requests per 5 minutes.
 # 3) The stock market API only works Monday-Friday.
 # 4) The stock market function determines the date via your system date.

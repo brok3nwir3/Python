@@ -1,16 +1,16 @@
-#WebDataScraper
-#A Python3 program by Phil van der Linden.
-#This program takes a URL as input, then scrapes the URL and it's HTML code for sensitive data.
+# --- Web Data Scraper ---
+# A Python3 program by Phil van der Linden.
+# This program takes a URL as input, then scrapes the URL and it's HTML code for sensitive data.
 
 #----IMPORT REQUIRED LIBRARIES----
 
-#Import the library for interpreting Bash commands.
+# Import the library for interpreting Bash commands.
 import subprocess
-#Import the library for regular expression pattern matching.
+# Import the library for regular expression pattern matching.
 import re
-#Import the libarary for matching Unix-style pathname patterns.
+# Import the libarary for matching Unix-style pathname patterns.
 import glob
-#Import the library for interacting with the OS.
+# Import the library for interacting with the OS.
 import os
 
 #----DEFINE GLOBAL VARIABLES----
@@ -23,7 +23,7 @@ resultsFile = open("search_results.txt", "w")
 
 #----DEFINE FUNCTIONS----
 
-#Function to find all downloaded files in the current directory (tempDir), store them in an array, and then merge them into temp.txt output file.
+# Function to find all downloaded files in the current directory (tempDir), store them in an array, and then merge them into temp.txt output file.
 def files2temp():
         pageArray = []
         for file in glob.glob("*"):
@@ -33,11 +33,11 @@ def files2temp():
         with open('temp.txt', "w") as outfile:
                 subprocess.run(my_cmd, stdout=outfile)
 
-#Note for some of the following functions...
-#HTML from WGET often contains strings with a less than or greater than symbols for HTML tags...
-#This means strings may be delimited with '<' or '>' rather than \n or \s in many cases.
+# Note for some of the following functions...
+# HTML from WGET often contains strings with a less than or greater than symbols for HTML tags...
+# This means strings may be delimited with '<' or '>' rather than \n or \s in many cases.
 
-#Function to search the target file for email addresses.
+# Function to search the target file for email addresses.
 def search4email():
         print("Possible Emails:")
         resultsFile.write("Possible Emails:\n")
@@ -49,7 +49,7 @@ def search4email():
                         resultsFile.write(email.group().replace('<','').replace('>','').replace(' ','').replace('\n','') + "\n")
         targetFile.close()
 
-#Function to search the target file for phone numbers.
+# Function to search the target file for phone numbers.
 def search4phone():
         print("\nPossible Phone Numbers:")
         resultsFile.write("\nPossible Phone Numbers:\n")
@@ -65,7 +65,7 @@ def search4phone():
                         resultsFile.write(phoneType2.group().replace('<','').replace('>','').replace('\n','') + "\n")
         targetFile.close()
 
-#Function to search the target file for social security numbers.
+# Function to search the target file for social security numbers.
 def search4social():
         print("\nPossible Social Security Numbers:")
         resultsFile.write("\nPossible Social Security Numbers:\n")
@@ -77,7 +77,7 @@ def search4social():
                         resultsFile.write(ssn.group().replace('<','').replace('>','').replace(' ','').replace('\n','') + "\n")
         targetFile.close()
 
-#Function to search the target file for credit card numbers.
+# Function to search the target file for credit card numbers.
 def search4cc():
         print("\nPossible Credit Card Numbers:")
         resultsFile.write("\nPossible Credit Card Numbers:\n")
@@ -93,7 +93,7 @@ def search4cc():
                         resultsFile.write(ccnType2.group().replace('<','').replace('>','').replace('\n','') + "\n")
         targetFile.close()
 
-#Function to search the target file for interesting strings.
+# Function to search the target file for interesting strings.
 def search4interesting():
         interestingStrings = False
         resultsFile.write("\nInteresting Strings Detected:\n")
@@ -135,11 +135,11 @@ def search4interesting():
                         interestingList.append("cookie=")
                         break
 
-        #Check whether interesting strings were found.
+        # Check whether interesting strings were found.
         if len(interestingList) > 0:
                 interestingStrings = True
 
-        #If interesting strings were found, provide option to list items.
+        # If interesting strings were found, provide option to list items.
         if interestingStrings == True:
                 print("\nInteresting code strings were detected.")
                 proceed = input("\nPress \'y\' to view or \'n\' to exit:")
@@ -161,14 +161,15 @@ print("Started at...")
 subprocess.run(date_cmd)
 print()
 
-#Have user select a query type.
+# Have user select a query type.
 print("Query Options...")
 print("1 - Page Query")
 print("2 - Directory Query")
 print("3 - Full website Query")
-#print("\nFile Options...")
-#print("4 - Download PDFs from directory")
-#print("5 - Download .doc and .docx from directory")
+# Future use...
+# print("\nFile Options...")
+# print("4 - Download PDFs from directory")
+# print("5 - Download .doc and .docx from directory")
 
 queryType = input("\nSpecify query type: ")
 if queryType == '':
@@ -176,19 +177,19 @@ if queryType == '':
         proc4 = subprocess.run(["rm", "search_results.txt"])
         quit()
 
-#Prompt user for a target, and store the value.
+# Prompt user for a target, and store the value.
 webpage = input("\nEnter target URL: ")
 if webpage == '':
         print("Empty target parameter. Exiting.")
         proc4 = subprocess.run(["rm", "search_results.txt"])
         quit()
 
-#Note the starting directory for later, make a temp directory, and move program to the new dir>
+# Note the starting directory for later, make a temp directory, and move program to the new dir>
 initial_cwd = os.getcwd()
 proc1 = subprocess.run(["mkdir", "tempDir"])
 os.chdir('tempDir')
 
-#Select WGET (plus parameters), based on selected query option.
+# Select WGET (plus parameters), based on selected query option.
 print("\nAnalyzing files...")
 if queryType == '1':
         proc2 = subprocess.run(["wget", "-q", "-np", "--show-progress", webpage])
@@ -204,7 +205,7 @@ if queryType =='3':
                 proc4 = subprocess.run(["rm", "search_results.txt"])
                 quit()
 
-#WGET Quick Reference:
+# WGET Quick Reference:
 # -q = Turn off output.
 # -S = Include server response headers.
 # -np = No parents directories.
@@ -215,12 +216,12 @@ if queryType =='3':
 # -l 1 = Sets the recusion depth to one, when the '-r' tag is present.
 # --show-progress = Displays a download progress bar.
 # Example WGET commands...
-#  wget -nd -r -l 1 -np https://www.google.com
+# wget -nd -r -l 1 -np https://www.google.com
 # wget -q --show-progress -A "*.mp3" https://www.example.com
 
 files2temp()
 
-#Setup header for Search_Results.txt.
+# Setup header for Search_Results.txt.
 resultsFile.write("+++++ WebDataScraper Results +++++\n\n")
 resultsFile.write("Target: " + webpage + "\n\n")
 
@@ -233,7 +234,7 @@ search4social()
 search4cc()
 search4interesting()
 
-#Return to the program to the original directory.
+# Return to the program to the original directory.
 os.chdir(initial_cwd)
 
 #----SAVING RESULTS----
@@ -244,19 +245,19 @@ proceed = input("\nPress \'y\' to save or \'n\' to exit:")
 if proceed == 'y':
         saveResults = True
         saveName = webpage + "_results"
-#       resultsFile = open("search_results.txt", "w")
+        # resultsFile = open("search_results.txt", "w")
         print("\nSaved " + saveName + ".txt to the current working directory.")
         for element in interestingList:
                 resultsFile.write(element + "\n")
-#       for element in emailList:
-#               resultsFile.write(element + "\n")
+                # for element in emailList:
+                # resultsFile.write(element + "\n")
         resultsFile.close()
 
 #----CLEAN UP STEPS----
 
-#Remove the temp directory, and its contents.
+# Remove the temp directory, and its contents.
 proc3 = subprocess.run(["rm","-r", "tempDir"])
 
-#Remove the search results, if unwanted.
+# Remove the search results, if unwanted.
 if saveResults == False:
         proc4 = subprocess.run(["rm", "search_results.txt"])

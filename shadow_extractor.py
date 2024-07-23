@@ -1,4 +1,4 @@
-# --- Shadow Extractor ---
+### Shadow Extractor ###
 # This script retrieves encrypted passwords from the /etc/shadow file on a Linux system, and identifies the hashing algorithm used.
 # Note: Elevated privileges are required to run the script, i.e. 'sudo python3 shadow_extractor.py'
 
